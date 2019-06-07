@@ -45,7 +45,6 @@ class toutiaoSpider {
         let responsePromise = this.urls.map(url => this.getResponse(url))
         let responseList = await Promise.all(responsePromise);
         for (let response of responseList) {
-            // let response = await this.getResponse(url);
             const rows = this.getRows(response);
             let promises = rows.map(row => this.saveRow(row));
             let insertIds = await Promise.all(promises);
@@ -54,7 +53,6 @@ class toutiaoSpider {
     }
 
     async close() {
-        // console.log(this.insertIds);
         console.log('Close connection pool.')
         await pool.end();
     }
@@ -66,10 +64,14 @@ class toutiaoSpider {
 
 (async function () {
     const urls = []
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 10; i++) {
         urls.push(`https://landing.toutiao.com/api/pc/hot_gallery/?widen=${i + 1}`)
     }
+    const start = new Date()
+    console.log(start.toDateString(), start.toTimeString())
     const spider = new toutiaoSpider(urls);
     await spider.parse();
     await spider.close();
+    const end = new Date() - start;
+    console.log(end.toString())
 })();
